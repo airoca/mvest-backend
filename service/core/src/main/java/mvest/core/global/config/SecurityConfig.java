@@ -1,4 +1,4 @@
-package mvest.core.global;
+package mvest.core.global.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
