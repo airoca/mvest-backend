@@ -1,0 +1,61 @@
+package mvest.order.infrastructure;
+
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
+@Table(name = "orders")
+public class OrderEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "order_id", nullable = false, unique = true)
+    private UUID orderId;
+
+    private Long userId;
+    private String stockCode;
+    private String orderType;
+    private BigDecimal price;
+    private int quantity;
+    private String status;
+
+    @CreatedDate
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
+
+    @Builder
+    public OrderEntity(Long id,
+                       UUID orderId,
+                       Long userId,
+                       String stockCode,
+                       String orderType,
+                       BigDecimal price,
+                       int quantity,
+                       String status) {
+        this.id = id;
+        this.orderId = orderId;
+        this.userId = userId;
+        this.stockCode = stockCode;
+        this.orderType = orderType;
+        this.price = price;
+        this.quantity = quantity;
+        this.status = status;
+    }
+}
