@@ -11,7 +11,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Getter
@@ -25,7 +24,7 @@ public class OrderEntity {
     private Long id;
 
     @Column(name = "order_id", nullable = false, unique = true)
-    private UUID orderId;
+    private Long orderId;
 
     private Long userId;
     private String stockCode;
@@ -42,7 +41,7 @@ public class OrderEntity {
 
     @Builder
     public OrderEntity(Long id,
-                       UUID orderId,
+                       Long orderId,
                        Long userId,
                        String stockCode,
                        String orderType,

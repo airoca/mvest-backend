@@ -2,12 +2,11 @@ package mvest.order.domain;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 public class Order {
 
     private final Long id;
-    private final UUID orderId;
+    private final Long orderId;
     private final Long userId;
     private final String stockCode;
     private final String orderType;
@@ -18,7 +17,7 @@ public class Order {
     private final LocalDateTime updatedAt;
 
     public Order(Long id,
-                 UUID orderId,
+                 Long orderId,
                  Long userId,
                  String stockCode,
                  String orderType,
@@ -43,7 +42,7 @@ public class Order {
         return id;
     }
 
-    public UUID getOrderId() {
+    public Long getOrderId() {
         return orderId;
     }
 

@@ -1,6 +1,6 @@
 CREATE TABLE orders (
     id BIGINT NOT NULL AUTO_INCREMENT,
-    order_id BINARY(16) NOT NULL,
+    order_id BIGINT NOT NULL,
     user_id BIGINT,
     stock_code VARCHAR(255),
     order_type VARCHAR(255),
