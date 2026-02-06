@@ -7,6 +7,7 @@ import mvest.core.auth.annotation.UserId;
 import mvest.core.auth.application.AuthService;
 import mvest.core.auth.constant.AuthConstant;
 import mvest.core.auth.dto.request.AuthLoginRequestDTO;
+import mvest.core.auth.dto.request.UserSignupDTO;
 import mvest.core.auth.dto.response.JwtTokenDTO;
 import mvest.core.auth.dto.response.UserTokenDTO;
 import mvest.core.global.code.CommonSuccessCode;
@@ -19,6 +20,14 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+
+    @PostMapping("/signup")
+    public ResponseDTO<UserTokenDTO> signup(
+            @NotBlank @RequestHeader(AuthConstant.AUTHORIZATION_HEADER) String signupToken,
+            @Valid @RequestBody UserSignupDTO userSignupDTO
+    ) {
+        return ResponseDTO.success(CommonSuccessCode.OK, authService.signup(signupToken, userSignupDTO));
+    }
 
     @PostMapping("/login")
     public ResponseDTO<UserTokenDTO> login(

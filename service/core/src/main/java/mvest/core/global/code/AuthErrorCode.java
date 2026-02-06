@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 public enum AuthErrorCode implements ErrorCode {
     PLATFORM_NOT_FOUND(HttpStatus.BAD_REQUEST, "유효하지 않은 소셜 플랫폼입니다."),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증되지 않은 사용자입니다."),
+    USER_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 가입된 사용자입니다."),
 
     // JWT (ACCESS)
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
