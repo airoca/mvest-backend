@@ -12,4 +12,6 @@ public interface UserRepository {
     Optional<User> findByPlatform(Platform platform, String platformId);
     void saveToken(Long userId, JwtTokenDTO token);
     void deleteToken(Long userId);
+    User findById(Long userId);
+    void deleteById(Long userId);
 }

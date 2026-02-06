@@ -77,6 +77,13 @@ public class AuthService {
     }
 
     public void withdraw(Long userId) {
+        User user = userRepository.findById(userId);
+        if(user.getPlatform() == Platform.KAKAO) {
+            kakaoService.unlink(user.getPlatformId());
+        } else {
+            throw new AuthException(AuthErrorCode.PLATFORM_NOT_FOUND);
+        }
+        userRepository.deleteById(userId);
     }
 
     private PlatformUserDTO getPlatformInfo(Platform platform, String platformToken) {

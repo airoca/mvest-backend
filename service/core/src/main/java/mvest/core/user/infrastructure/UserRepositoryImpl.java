@@ -5,6 +5,8 @@ import mvest.core.auth.dto.request.UserSignupDTO;
 import mvest.core.auth.dto.response.JwtTokenDTO;
 import mvest.core.auth.infrastructure.TokenEntity;
 import mvest.core.auth.infrastructure.TokenRedisRepository;
+import mvest.core.global.code.UserErrorCode;
+import mvest.core.global.exception.BusinessException;
 import mvest.core.user.application.UserRepository;
 import mvest.core.user.domain.Platform;
 import mvest.core.user.domain.User;
@@ -37,8 +39,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<User> findByPlatform(Platform platform, String platformId) {
-        return userJpaRepository
-                .findByPlatformAndPlatformId(platform, platformId)
+        return userJpaRepository.findByPlatformAndPlatformId(platform, platformId)
                 .map(UserMapper::toDomain);
     }
 
@@ -54,5 +55,17 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public void deleteToken(Long userId) {
         tokenRedisRepository.deleteById(userId);
+    }
+
+    @Override
+    public User findById(Long userId) {
+        return userJpaRepository.findById(userId)
+                .map(UserMapper::toDomain)
+                .orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
+    }
+
+    @Override
+    public void deleteById(Long userId) {
+        userJpaRepository.deleteById(userId);
     }
 }
