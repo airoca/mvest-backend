@@ -72,10 +72,6 @@ public class AuthService {
         userRepository.deleteToken(userId);
     }
 
-    public JwtTokenDTO reissue(String refreshToken) {
-        return null;
-    }
-
     public void withdraw(Long userId) {
         User user = userRepository.findById(userId);
         if(user.getPlatform() == Platform.KAKAO) {
@@ -84,6 +80,24 @@ public class AuthService {
             throw new AuthException(AuthErrorCode.PLATFORM_NOT_FOUND);
         }
         userRepository.deleteById(userId);
+    }
+
+    public JwtTokenDTO reissue(String refreshToken) {
+        jwtTokenValidator.validateRefreshToken(refreshToken);
+        ClaimDTO claim = jwtTokenProvider.getClaimFromToken(refreshToken);
+        Long userId = claim.userId();
+        String savedRefreshToken = userRepository.findRefreshToken(userId)
+                .orElseThrow(() ->
+                        new AuthException(AuthErrorCode.INVALID_REFRESH_TOKEN)
+                );
+        if (!savedRefreshToken.equals(refreshToken)) {
+            throw new AuthException(AuthErrorCode.INVALID_REFRESH_TOKEN);
+        }
+
+        JwtTokenDTO newToken = jwtTokenProvider.generateTokenPair(userId);
+        userRepository.saveToken(userId, newToken);
+
+        return newToken;
     }
 
     private PlatformUserDTO getPlatformInfo(Platform platform, String platformToken) {

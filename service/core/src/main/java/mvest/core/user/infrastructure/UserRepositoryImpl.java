@@ -68,4 +68,10 @@ public class UserRepositoryImpl implements UserRepository {
     public void deleteById(Long userId) {
         userJpaRepository.deleteById(userId);
     }
+
+    @Override
+    public Optional<String> findRefreshToken(Long userId) {
+        return tokenRedisRepository.findById(userId)
+                .map(TokenEntity::getRefreshToken);
+    }
 }

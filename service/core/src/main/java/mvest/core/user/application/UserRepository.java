@@ -14,4 +14,5 @@ public interface UserRepository {
     void deleteToken(Long userId);
     User findById(Long userId);
     void deleteById(Long userId);
+    Optional<String> findRefreshToken(Long userId);
 }
