@@ -1,4 +1,4 @@
-name: deploy-core
+name: deploy-all-services
 
 on:
   workflow_dispatch:
@@ -27,7 +27,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      # application.yml 생성 (core / order / asset)
+      # application.yml 생성
       - name: Generate application.yml files
         run: |
           mkdir -p service/core/src/main/resources
@@ -38,19 +38,29 @@ jobs:
           echo "${{ secrets.ORDER_APPLICATION }}" > service/order/src/main/resources/application.yml
           echo "${{ secrets.ASSET_APPLICATION }}" > service/asset/src/main/resources/application.yml
 
-      # core 서비스만 빌드
-      - name: Build core service
-        run: ./gradlew :service:core:bootJar -x test
+      # Service Build
+      - name: Build services
+        run: |
+          ./gradlew :service:core:bootJar -x test
+          ./gradlew :service:order:bootJar -x test
+          ./gradlew :service:asset:bootJar -x test
 
       - name: Login to Docker Hub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
-      # core 전용 Dockerfile 기준으로 이미지 빌드
-      - name: Build Docker Image (core)
-        run: docker build -t yh0872/mvest-core:latest service/core
+      # Docker Image Build
+      - name: Build Docker Images
+        run: |
+          docker build -t yh0872/mvest-core:latest service/core
+          docker build -t yh0872/mvest-order:latest service/order
+          docker build -t yh0872/mvest-asset:latest service/asset
 
-      - name: Publish Image to Docker Hub
-        run: docker push yh0872/mvest-core:latest
+      # Push Images
+      - name: Push Docker Images
+        run: |
+          docker push yh0872/mvest-core:latest
+          docker push yh0872/mvest-order:latest
+          docker push yh0872/mvest-asset:latest
 
   deploy:
     needs: build
@@ -68,10 +78,27 @@ jobs:
       - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i ssh_key.pem ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+            # core
             sudo docker pull yh0872/mvest-core:latest
-            sudo docker rm -f mvest-core-container || true
+            sudo docker rm -f mvest-core || true
             sudo docker run -d \
               -p 9000:9000 \
-              --name mvest-core-container \
+              --name mvest-core \
               yh0872/mvest-core:latest
+
+            # order
+            sudo docker pull yh0872/mvest-order:latest
+            sudo docker rm -f mvest-order || true
+            sudo docker run -d \
+              -p 9001:9001 \
+              --name mvest-order \
+              yh0872/mvest-order:latest
+
+            # asset
+            sudo docker pull yh0872/mvest-asset:latest
+            sudo docker rm -f mvest-asset || true
+            sudo docker run -d \
+              -p 9002:9002 \
+              --name mvest-asset \
+              yh0872/mvest-asset:latest
           EOF
