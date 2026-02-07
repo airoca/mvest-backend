@@ -28,4 +28,8 @@ public class UserCash {
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
+
+    public static UserCash initial(Long userId, BigDecimal balance) {
+        return new UserCash(userId, balance, null);
+    }
 }

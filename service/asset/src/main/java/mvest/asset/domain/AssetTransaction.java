@@ -70,4 +70,18 @@ public class AssetTransaction {
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
+
+    public static AssetTransaction initialDeposit(Long userId, BigDecimal amount) {
+        return new AssetTransaction(
+                null,
+                null,
+                userId,
+                null,
+                "INITIAL_DEPOSIT",
+                null,
+                0,
+                amount,
+                null
+        );
+    }
 }
