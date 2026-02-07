@@ -1,6 +1,10 @@
 package mvest.core.auth.application;
 
 import lombok.RequiredArgsConstructor;
+import mvest.common.event.EventType;
+import mvest.common.event.payload.UserRegisteredEventPayload;
+import mvest.common.event.payload.UserWithdrawnEventPayload;
+import mvest.common.outboxmessagerelay.OutboxEventPublisher;
 import mvest.core.auth.dto.ClaimDTO;
 import mvest.core.auth.dto.PlatformUserDTO;
 import mvest.core.auth.dto.request.UserSignupDTO;
@@ -24,6 +28,7 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtTokenValidator jwtTokenValidator;
     private final KakaoService kakaoService;
+    private final OutboxEventPublisher outboxEventPublisher;
 
     @Transactional
     public UserTokenDTO signup(String signupToken, UserSignupDTO userSignupDTO) {
@@ -41,6 +46,14 @@ public class AuthService {
                 platform,
                 platformId,
                 userSignupDTO
+        );
+
+        outboxEventPublisher.publish(
+                EventType.USER_REGISTERED,
+                UserRegisteredEventPayload.builder()
+                        .userId(user.getUserId())
+                        .registeredAt(user.getCreatedAt())
+                        .build()
         );
 
         JwtTokenDTO token = jwtTokenProvider.generateTokenPair(user.getUserId());
@@ -80,6 +93,14 @@ public class AuthService {
             throw new AuthException(AuthErrorCode.PLATFORM_NOT_FOUND);
         }
         userRepository.deleteById(userId);
+
+        outboxEventPublisher.publish(
+                EventType.USER_WITHDRAWN,
+                UserWithdrawnEventPayload.builder()
+                        .userId(userId)
+                        .withdrawnAt(java.time.LocalDateTime.now())
+                        .build()
+        );
     }
 
     public JwtTokenDTO reissue(String refreshToken) {

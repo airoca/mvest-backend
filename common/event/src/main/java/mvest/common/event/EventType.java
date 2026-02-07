@@ -13,6 +13,10 @@ public enum EventType {
     // Core → Order
     ORDER_SUBMITTED(OrderSubmittedEventPayload.class, Topic.MVEST_ORDER),
 
+    // Core → Order, Asset
+    USER_REGISTERED(UserRegisteredEventPayload.class, Topic.USER_REGISTERED),
+    USER_WITHDRAWN(UserWithdrawnEventPayload.class, Topic.USER_WITHDRAWN),
+
     // Order → Core
     ORDER_EXECUTED(OrderExecutedEventPayload.class, Topic.MVEST_CORE),
     ORDER_REJECTED(OrderRejectedEventPayload.class, Topic.MVEST_CORE),
@@ -39,5 +43,7 @@ public enum EventType {
         public static final String MVEST_CORE = "mvest-core";
         public static final String MVEST_ORDER = "mvest-order";
         public static final String MVEST_ASSET = "mvest-asset";
+        public static final String USER_REGISTERED = "user.registered";
+        public static final String USER_WITHDRAWN  = "user.withdrawn";
     }
 }
